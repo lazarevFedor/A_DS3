@@ -1,108 +1,80 @@
 package main
 
+type color bool
+
+const (
+	black, red color = true, false
+)
+
+func Comparator(value1, value2 int) int {
+	if value1 < value2 {
+		return -1
+	}
+	if value1 > value2 {
+		return 1
+	}
+	return 0
+}
+
 type Node struct {
 	Key    int
+	color  color
 	Left   *Node
 	Right  *Node
 	Parent *Node
-	Color  string
 }
 
-func newNode(key int) *Node {
-	return &Node{Key: key, Left: nullNode, Right: nullNode, Parent: nullNode, Color: "red"}
-}
-
-func nodeExists(n *Node) bool {
-	if n != nullNode && n != nil {
-		return true
-	}
-	return false
-}
-
-type Tree struct {
+type rbTree struct {
 	Root *Node
+	size int
 }
 
-var nullNode *Node = &Node{Key: 0, Left: nil, Right: nil, Parent: nil, Color: "black"}
-
-func (t *Tree) rotateLeft(node *Node) *Node {
-	var rightSubTree *Node = node.Right
-	var rightLeftSubTree *Node = rightSubTree.Left
-	rightSubTree.Left = node
-	node.Right = rightLeftSubTree
-	node = rightSubTree
-	return node
-}
-
-func (t *Tree) rotateRight(node *Node) *Node {
-	var leftSubTree *Node = node.Left
-	var leftRightSubTree *Node = leftSubTree.Right
-	leftSubTree.Right = node
-	node.Left = leftRightSubTree
-	node = leftSubTree
-	return node
-}
-
-func (t *Tree) balanceTree(node *Node) *Node {
-	var uncle *Node
-	for node.Parent != nullNode && node.Parent.Color == "red" {
-		if node.Parent == node.Parent.Parent.Left {
-			uncle = node.Parent.Parent.Right
-			if uncle.Color == "red" {
-				node.Parent.Color = "black"
-				uncle.Color = "black"
-				node.Parent.Parent.Color = "red"
-				node = node.Parent.Parent
-			} else {
-				if node == node.Parent.Right {
-					node = node.Parent
-					t.rotateLeft(node)
-				}
-				node.Parent.Color = "black"
-				node.Parent.Parent.Color = "red"
-				t.rotateRight(node.Parent.Parent)
-			}
-		} else {
-			uncle = node.Parent.Parent.Left
-			if uncle.Color == "red" {
-				node.Parent.Color = "black"
-				uncle.Color = "black"
-				node.Parent.Parent.Color = "red"
-				node = node.Parent.Parent
-			} else {
-				if node == node.Parent.Left {
-					node = node.Parent
-					t.rotateRight(node)
-				}
-				node.Parent.Color = "black"
-				node.Parent.Parent.Color = "red"
-				t.rotateLeft(node.Parent.Parent)
-			}
-		}
-	}
-	t.Root.Color = "black"
-	return node
-}
-
-func (t *Tree) Insert(key int) {
-	var current *Node = t.Root
-	var parent *Node = nullNode
-	for nodeExists(current) {
-		parent = current
-		if key < current.Key {
-			current = current.Left
-		} else {
-			current = current.Right
-		}
-	}
-	var node *Node = newNode(key)
-	node.Parent = parent
-	if parent == nullNode {
-		t.Root = node
-	} else if key < parent.Key {
-		parent.Left = node
+func (tree *rbTree) Insert(key int) {
+	var insertedNode *Node
+	if tree.Root == nil {
+		tree.Root = &Node{Key: key, color: red}
+		insertedNode = tree.Root
 	} else {
-		parent.Right = node
+		node := tree.Root
+		loop := true
+		for loop {
+			compare := Comparator(key, node.Key)
+			switch compare {
+			case 0:
+				node.Key = key
+				return
+			case -1:
+				if node.Left == nil {
+					node.Left = &Node{Key: key, color: red}
+					insertedNode = node.Left
+					loop = false
+				} else {
+					node = node.Left
+				}
+			case 1:
+				if node.Right == nil {
+					node.Right = &Node{Key: key, color: red}
+					insertedNode = node.Right
+					loop = false
+				} else {
+					node = node.Right
+				}
+			}
+		}
+		insertedNode.Parent = node
 	}
-	t.balanceTree(node)
+	tree.insertCase1(insertedNode)
+	tree.size++
+}
+
+func (tree *rbTree) insertCase1(node *Node) {
+	if node.Parent == nil {
+		node.color = black
+	} else {
+		tree.insertCase2(node)
+	}
+}
+
+func (tree *rbTree) insertCase2(node *Node) {
+
 }
