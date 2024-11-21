@@ -5,13 +5,31 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
+	"runtime"
 	"strconv"
 	"unicode"
 )
 
+func ClearScreen() {
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		err := cmd.Run()
+		if err != nil {
+			return
+		}
+	}
+}
+
 func getStringFromFile(filename string) (string, error) {
 	file, err := os.Open(filename)
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+
+		}
+	}(file)
 	if err != nil {
 		return "", err
 	}
@@ -113,7 +131,11 @@ func parseToTree(expression string) (*BinTree.Node, error, int) {
 	return node, nil, bracketBalance
 }
 
-func application() {
+// Applications
+func redBlackTreeApplication() {
+}
+
+func binaryTreeApplication() {
 	//Extracting string with tree from the file
 	var filename string
 	// File named as expression.txt
@@ -133,5 +155,33 @@ func application() {
 	if err != nil || bracketBalance != 0 {
 		fmt.Printf("Error parsing string to tree: %v\n", err)
 		return
+	}
+}
+
+// main application
+func application() {
+	var choice int
+	for {
+		fmt.Print("Main menu:\n")
+		fmt.Println("1. Make Binary Tree")
+		fmt.Println("2. Make Red-Black Tree")
+		fmt.Println("3. Exit")
+		fmt.Print("Enter your choice: ")
+		_, err := fmt.Scanln(&choice)
+		if err != nil {
+			fmt.Println("Invalid input. Please enter a number.")
+			continue
+		}
+		switch choice {
+		case 1:
+			ClearScreen()
+			binaryTreeApplication()
+			break
+		case 2:
+			redBlackTreeApplication()
+			break
+		case 3:
+			return
+		}
 	}
 }
