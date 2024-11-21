@@ -35,6 +35,7 @@ func parseToTree(expression string) (*BinTree.Node, error, int) {
 	bracketBalance := 0
 	sonIdxStart := 0
 	sonIdxEnd := 0
+	twoSons := false
 	var err error
 	node := &BinTree.Node{}
 	// parse the expression
@@ -58,6 +59,7 @@ func parseToTree(expression string) (*BinTree.Node, error, int) {
 					} else if rightSonExpected {
 						rightSonExpected = false
 						node.Right, err, _ = parseToTree(expression[sonIdxStart : sonIdxEnd+1])
+						twoSons = true
 						if err != nil {
 							return nil, err, 0
 						}
@@ -78,7 +80,13 @@ func parseToTree(expression string) (*BinTree.Node, error, int) {
 				continue
 			}
 		case token == '(':
+			if expression[i+1] == '(' {
+				return nil, fmt.Errorf("incorrect entry of brackets"), 0
+			}
 			bracketBalance++
+			if twoSons {
+				return nil, fmt.Errorf("too many clindren"), 0
+			}
 			if digit != "" && !leftSonExpected && !rightSonExpected {
 				node.Key, _ = strconv.Atoi(digit)
 				digit = ""
@@ -96,9 +104,11 @@ func parseToTree(expression string) (*BinTree.Node, error, int) {
 			}
 			bracketBalance--
 		default:
-			fmt.Printf("Invalid character: %c\n", token)
-			return nil, fmt.Errorf("Invalid character: %c", token), 0
+			return nil, fmt.Errorf("invalid character: %c", token), 0
 		}
+	}
+	if expression[len(expression)-1] != ')' {
+		return nil, fmt.Errorf("missing closing bracket"), 0
 	}
 	return node, nil, bracketBalance
 }
