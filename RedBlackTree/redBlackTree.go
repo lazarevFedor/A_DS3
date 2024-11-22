@@ -1,5 +1,7 @@
 package RedBlackTree
 
+import "strconv"
+
 type color bool
 
 const (
@@ -25,13 +27,13 @@ type Node struct {
 	Parent *Node
 }
 
-type RBTree struct {
+type Tree struct {
 	Root *Node
 	size int
 }
 
-func NewRBTree() *RBTree {
-	return &RBTree{Root: nil, size: 0}
+func NewRBTree() *Tree {
+	return &Tree{Root: nil, size: 0}
 }
 
 // Color of node
@@ -67,8 +69,39 @@ func (node *Node) sibling() *Node {
 	return node.Parent.Left
 }
 
+// Traverses
+func (tree *Tree) preOrderTravers(node *Node) string {
+	var str string
+	if node != nil {
+		str += strconv.Itoa(node.Key)
+		str += tree.preOrderTravers(node.Left)
+		str += tree.preOrderTravers(node.Right)
+	}
+	return str
+}
+
+func (tree *Tree) inOrderTravers(node *Node) string {
+	var str string
+	if node != nil {
+		str += tree.inOrderTravers(node.Left)
+		str += strconv.Itoa(node.Key)
+		str += tree.inOrderTravers(node.Right)
+	}
+	return str
+}
+
+func (tree *Tree) postOrderTravers(node *Node) string {
+	var str string
+	if node != nil {
+		str += tree.postOrderTravers(node.Left)
+		str += tree.postOrderTravers(node.Right)
+		str += strconv.Itoa(node.Key)
+	}
+	return str
+}
+
 // Insert and its cases
-func (tree *RBTree) Insert(key int) {
+func (tree *Tree) Insert(key int) {
 	var insertedNode *Node
 	if tree.Root == nil {
 		tree.Root = &Node{Key: key, color: red}
@@ -106,7 +139,7 @@ func (tree *RBTree) Insert(key int) {
 	tree.size++
 }
 
-func (tree *RBTree) insertCase1(node *Node) {
+func (tree *Tree) insertCase1(node *Node) {
 	if node.Parent == nil {
 		node.color = black
 	} else {
@@ -114,14 +147,14 @@ func (tree *RBTree) insertCase1(node *Node) {
 	}
 }
 
-func (tree *RBTree) insertCase2(node *Node) {
+func (tree *Tree) insertCase2(node *Node) {
 	if nodeColor(node.Parent) == black {
 		return
 	}
 	tree.insertCase3(node)
 }
 
-func (tree *RBTree) insertCase3(node *Node) {
+func (tree *Tree) insertCase3(node *Node) {
 	uncle := node.uncle()
 	if nodeColor(uncle) == red {
 		node.Parent.color = black
@@ -133,7 +166,7 @@ func (tree *RBTree) insertCase3(node *Node) {
 	}
 }
 
-func (tree *RBTree) insertCase4(node *Node) {
+func (tree *Tree) insertCase4(node *Node) {
 	grandparent := node.grandParent()
 	if node == node.Parent.Right && node.Parent == grandparent.Left {
 		tree.rotateLeft(node.Parent)
@@ -145,7 +178,7 @@ func (tree *RBTree) insertCase4(node *Node) {
 	tree.insertCase5(node)
 }
 
-func (tree *RBTree) insertCase5(node *Node) {
+func (tree *Tree) insertCase5(node *Node) {
 	node.Parent.color = black
 	grandparent := node.grandParent()
 	grandparent.color = red
@@ -157,7 +190,7 @@ func (tree *RBTree) insertCase5(node *Node) {
 }
 
 // Rotates the tree
-func (tree *RBTree) rotateLeft(node *Node) {
+func (tree *Tree) rotateLeft(node *Node) {
 	right := node.Right
 	tree.replaceNode(node, right)
 	node.Right = right.Left
@@ -168,7 +201,7 @@ func (tree *RBTree) rotateLeft(node *Node) {
 	node.Parent = right
 }
 
-func (tree *RBTree) rotateRight(node *Node) {
+func (tree *Tree) rotateRight(node *Node) {
 	left := node.Left
 	tree.replaceNode(node, left)
 	node.Left = left.Right
@@ -179,7 +212,7 @@ func (tree *RBTree) rotateRight(node *Node) {
 	node.Parent = left
 }
 
-func (tree *RBTree) replaceNode(old *Node, new *Node) {
+func (tree *Tree) replaceNode(old *Node, new *Node) {
 	if old.Parent == nil {
 		tree.Root = new
 	} else {
@@ -192,4 +225,9 @@ func (tree *RBTree) replaceNode(old *Node, new *Node) {
 	if new != nil {
 		new.Parent = old.Parent
 	}
+}
+
+func (tree *Tree) Clear() {
+	tree.Root = nil
+	tree.size = 0
 }
