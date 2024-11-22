@@ -1,7 +1,7 @@
 package main
 
 import (
-	BinTree "A_DS3/BinaryTree"
+	Binary "A_DS3/BinaryTree"
 	"bufio"
 	"fmt"
 	"os"
@@ -11,6 +11,7 @@ import (
 	"unicode"
 )
 
+// ClearScreen clears the console screen on Windows systems.
 func ClearScreen() {
 	if runtime.GOOS == "windows" {
 		cmd := exec.Command("cmd", "/c", "cls")
@@ -22,6 +23,7 @@ func ClearScreen() {
 	}
 }
 
+// getStringFromFile reads the contents of a file and returns it as a string.
 func getStringFromFile(filename string) (string, error) {
 	file, err := os.Open(filename)
 	defer func(file *os.File) {
@@ -46,7 +48,8 @@ func getStringFromFile(filename string) (string, error) {
 	return content, nil
 }
 
-func parseToTree(expression string) (*BinTree.Node, error, int) {
+// parseToTree parses an arithmetic expression in infix notation into a binary tree.
+func parseToTree(expression string) (*Binary.Node, error, int) {
 	var digit string
 	leftSonExpected := false
 	rightSonExpected := false
@@ -55,7 +58,7 @@ func parseToTree(expression string) (*BinTree.Node, error, int) {
 	sonIdxEnd := 0
 	twoSons := false
 	var err error
-	node := &BinTree.Node{}
+	node := &Binary.Node{}
 	// parse the expression
 	for i, token := range expression {
 		// parsing SubTree from the expression
@@ -131,10 +134,10 @@ func parseToTree(expression string) (*BinTree.Node, error, int) {
 	return node, nil, bracketBalance
 }
 
-// Applications
 func redBlackTreeApplication() {
 }
 
+// binaryTreeApplication handles the binary tree creation process.
 func binaryTreeApplication() {
 	//Extracting string with tree from the file
 	var filename string
@@ -158,7 +161,7 @@ func binaryTreeApplication() {
 	}
 }
 
-// main application
+// application - This function serves as the main entry point for the application.
 func application() {
 	var choice int
 	for {
