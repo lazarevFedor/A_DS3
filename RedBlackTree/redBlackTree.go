@@ -71,7 +71,24 @@ func (node *Node) sibling() *Node {
 	return node.Parent.Left
 }
 
-// Traverses
+// Search for a node with the given key in the Red-Black Tree.
+func (tree *Tree) Search(key int) *Node {
+	node := tree.Root
+	for node != nil {
+		compare := Comparator(key, node.Key)
+		switch {
+		case compare == 0:
+			return node
+		case compare < 0:
+			node = node.Left
+		case compare > 0:
+			node = node.Right
+		}
+	}
+	return nil
+}
+
+// PreOrderTravers function performs a pre-order traversal of the Red-Black Tree.
 func (tree *Tree) PreOrderTravers(node *Node) string {
 	var str string
 	if node != nil {
@@ -82,6 +99,7 @@ func (tree *Tree) PreOrderTravers(node *Node) string {
 	return str
 }
 
+// InOrderTravers function performs an in-order traversal of the Red-Black Tree.
 func (tree *Tree) InOrderTravers(node *Node) string {
 	var str string
 	if node != nil {
@@ -92,6 +110,7 @@ func (tree *Tree) InOrderTravers(node *Node) string {
 	return str
 }
 
+// PostOrderTravers function performs a post-order traversal of the Red-Black Tree.
 func (tree *Tree) PostOrderTravers(node *Node) string {
 	var str string
 	if node != nil {
@@ -102,6 +121,7 @@ func (tree *Tree) PostOrderTravers(node *Node) string {
 	return str
 }
 
+// LevelOrderTravers performs a level-order traversal of the Red-Black Tree.
 func (tree *Tree) LevelOrderTravers(root *Node) string {
 	var str string
 	if root == nil {
@@ -250,6 +270,7 @@ func (tree *Tree) replaceNode(old *Node, new *Node) {
 	}
 }
 
+// Clear removes all nodes from the Red-Black Tree.
 func (tree *Tree) Clear() {
 	tree.Root = nil
 	tree.size = 0
