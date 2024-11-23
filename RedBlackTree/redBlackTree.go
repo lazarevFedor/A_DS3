@@ -75,9 +75,9 @@ func (node *Node) sibling() *Node {
 func (tree *Tree) PreOrderTravers(node *Node) string {
 	var str string
 	if node != nil {
-		str += strconv.Itoa(node.Key)
-		str += tree.PreOrderTravers(node.Left)
-		str += tree.PreOrderTravers(node.Right)
+		str += strconv.Itoa(node.Key) + " "
+		str += tree.PreOrderTravers(node.Left) + " "
+		str += tree.PreOrderTravers(node.Right) + " "
 	}
 	return str
 }
@@ -85,9 +85,9 @@ func (tree *Tree) PreOrderTravers(node *Node) string {
 func (tree *Tree) InOrderTravers(node *Node) string {
 	var str string
 	if node != nil {
-		str += tree.InOrderTravers(node.Left)
-		str += strconv.Itoa(node.Key)
-		str += tree.InOrderTravers(node.Right)
+		str += tree.InOrderTravers(node.Left) + " "
+		str += strconv.Itoa(node.Key) + " "
+		str += tree.InOrderTravers(node.Right) + " "
 	}
 	return str
 }
@@ -95,9 +95,9 @@ func (tree *Tree) InOrderTravers(node *Node) string {
 func (tree *Tree) PostOrderTravers(node *Node) string {
 	var str string
 	if node != nil {
-		str += tree.PostOrderTravers(node.Left)
-		str += tree.PostOrderTravers(node.Right)
-		str += strconv.Itoa(node.Key)
+		str += tree.PostOrderTravers(node.Left) + " "
+		str += tree.PostOrderTravers(node.Right) + " "
+		str += strconv.Itoa(node.Key) + " "
 	}
 	return str
 }
