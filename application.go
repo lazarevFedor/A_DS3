@@ -135,6 +135,7 @@ func parseToTree(expression string) (*Binary.Node, error, int) {
 	return node, nil, bracketBalance
 }
 
+// redBlackTreeApplication - red-black tree application.
 func redBlackTreeApplication(travers string) {
 	var choise int
 	tree := RedBlack.NewRBTree()
@@ -192,11 +193,11 @@ func redBlackTreeApplication(travers string) {
 				fmt.Println("Invalid input. Please enter a number.")
 				continue
 			}
-			//if tree.Search(key) {
-			//    fmt.Printf("Element %d found in the tree.\n", key)
-			//} else {
-			//    fmt.Printf("Element %d not found in the tree.\n", key)
-			//}
+			if tree.Search(key) != nil {
+				fmt.Printf("Element %d found in the tree.\n", key)
+			} else {
+				fmt.Printf("Element %d not found in the tree.\n", key)
+			}
 		case 5:
 			fmt.Println("In-order traversal:")
 			RedBlackTreeTravers := tree.InOrderTravers(tree.Root)

@@ -17,6 +17,7 @@ func NewBinTree() *Tree {
 	return &Tree{Root: nil, size: 0}
 }
 
+// PreOrderTravers function performs a pre-order traversal of the binary tree.
 func (tree *Tree) PreOrderTravers(node *Node) string {
 	var str string
 	if node != nil {
