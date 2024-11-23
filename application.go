@@ -2,6 +2,7 @@ package main
 
 import (
 	Binary "A_DS3/BinaryTree"
+	RedBlack "A_DS3/RedBlackTree"
 	"bufio"
 	"fmt"
 	"os"
@@ -134,11 +135,97 @@ func parseToTree(expression string) (*Binary.Node, error, int) {
 	return node, nil, bracketBalance
 }
 
-func redBlackTreeApplication() {
+func redBlackTreeApplication(travers string) {
+	var choise int
+	tree := RedBlack.NewRBTree()
+	for {
+		fmt.Println("Red-Black Tree Application Menu")
+		fmt.Println("1. Create tree from binary tree")
+		fmt.Println("2. Insert element")
+		fmt.Println("3. Delete element")
+		fmt.Println("4. Search element")
+		fmt.Println("5. In-order traversal")
+		fmt.Println("6. Pre-order traversal")
+		fmt.Println("7. Post-order traversal")
+		fmt.Println("8. Level-Order traversal")
+		fmt.Println("9. Clear screen")
+		fmt.Println("10. Back")
+		fmt.Print("Enter your choice: ")
+		_, err := fmt.Scan(&choise)
+		if err != nil {
+			fmt.Println("Invalid input. Please enter a number.")
+			continue
+		}
+		switch choise {
+		case 1:
+			for _, v := range travers {
+				if unicode.IsDigit(v) {
+					tree.Insert(int(v - '0'))
+				}
+			}
+			fmt.Println("Red-Black Tree successfully created.")
+		case 2:
+			var key int
+			fmt.Print("Enter key to insert: ")
+			_, err := fmt.Scan(&key)
+			if err != nil {
+				fmt.Println("Invalid input. Please enter a number.")
+				continue
+			}
+			tree.Insert(key)
+			fmt.Printf("Element %d inserted successfully.\n", key)
+		case 3:
+			var key int
+			fmt.Print("Enter key to delete: ")
+			_, err := fmt.Scan(&key)
+			if err != nil {
+				fmt.Println("Invalid input. Please enter a number.")
+				continue
+			}
+			//tree.Delete(key)
+			fmt.Printf("Element %d deleted successfully.\n", key)
+		case 4:
+			var key int
+			fmt.Print("Enter key to search: ")
+			_, err := fmt.Scan(&key)
+			if err != nil {
+				fmt.Println("Invalid input. Please enter a number.")
+				continue
+			}
+			//if tree.Search(key) {
+			//    fmt.Printf("Element %d found in the tree.\n", key)
+			//} else {
+			//    fmt.Printf("Element %d not found in the tree.\n", key)
+			//}
+		case 5:
+			fmt.Println("In-order traversal:")
+			RedBlackTreeTravers := tree.InOrderTravers(tree.Root)
+			fmt.Println(RedBlackTreeTravers)
+		case 6:
+			fmt.Println("Pre-order traversal:")
+			RedBlackTreeTravers := tree.PreOrderTravers(tree.Root)
+			fmt.Println(RedBlackTreeTravers)
+		case 7:
+			fmt.Println("Post-order traversal:")
+			RedBlackTreeTravers := tree.PostOrderTravers(tree.Root)
+			fmt.Println(RedBlackTreeTravers)
+		case 8:
+			fmt.Println("Level-order traversal:")
+			RedBlackTreeTravers := tree.LevelOrderTravers(tree.Root)
+			fmt.Println(RedBlackTreeTravers)
+		case 9:
+			ClearScreen()
+			continue
+		case 10:
+			return
+		}
+	}
 }
 
 // binaryTreeApplication handles the binary tree creation process.
-func binaryTreeApplication() {
+func binaryTreeApplication() string {
+	tree := Binary.NewBinTree()
+	bracketBalance := 0
 	//Extracting string with tree from the file
 	var filename string
 	// File named as expression.txt
@@ -146,24 +233,30 @@ func binaryTreeApplication() {
 	_, err := fmt.Scanln(&filename)
 	if err != nil {
 		fmt.Println("Error reading filename")
-		return
+		return ""
 	}
 	content, err := getStringFromFile(filename)
 	if err != nil {
 		fmt.Printf("Error reading file: %v\n", err)
-		return
+		return ""
 	}
 	//Parsing string into the tree
-	_, err, bracketBalance := parseToTree(content)
+	tree.Root, err, bracketBalance = parseToTree(content)
 	if err != nil || bracketBalance != 0 {
 		fmt.Printf("Error parsing string to tree: %v\n", err)
-		return
+		return ""
 	}
+	fmt.Println("Binary Tree successfully created.")
+
+	travers := tree.PreOrderTravers(tree.Root)
+	fmt.Println("Binary Tree:", travers)
+	return travers
 }
 
 // application - This function serves as the main entry point for the application.
 func application() {
 	var choice int
+	var travers string
 	for {
 		fmt.Print("Main menu:\n")
 		fmt.Println("1. Make Binary Tree")
@@ -178,10 +271,13 @@ func application() {
 		switch choice {
 		case 1:
 			ClearScreen()
-			binaryTreeApplication()
+			travers = ""
+			travers = binaryTreeApplication()
 			break
 		case 2:
-			redBlackTreeApplication()
+			ClearScreen()
+			redBlackTreeApplication(travers)
+			travers = ""
 			break
 		case 3:
 			return
