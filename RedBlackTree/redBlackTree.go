@@ -1,6 +1,8 @@
 package RedBlackTree
 
-import "strconv"
+import (
+	"strconv"
+)
 
 type color bool
 
@@ -70,32 +72,53 @@ func (node *Node) sibling() *Node {
 }
 
 // Traverses
-func (tree *Tree) preOrderTravers(node *Node) string {
+func (tree *Tree) PreOrderTravers(node *Node) string {
 	var str string
 	if node != nil {
 		str += strconv.Itoa(node.Key)
-		str += tree.preOrderTravers(node.Left)
-		str += tree.preOrderTravers(node.Right)
+		str += tree.PreOrderTravers(node.Left)
+		str += tree.PreOrderTravers(node.Right)
 	}
 	return str
 }
 
-func (tree *Tree) inOrderTravers(node *Node) string {
+func (tree *Tree) InOrderTravers(node *Node) string {
 	var str string
 	if node != nil {
-		str += tree.inOrderTravers(node.Left)
+		str += tree.InOrderTravers(node.Left)
 		str += strconv.Itoa(node.Key)
-		str += tree.inOrderTravers(node.Right)
+		str += tree.InOrderTravers(node.Right)
 	}
 	return str
 }
 
-func (tree *Tree) postOrderTravers(node *Node) string {
+func (tree *Tree) PostOrderTravers(node *Node) string {
 	var str string
 	if node != nil {
-		str += tree.postOrderTravers(node.Left)
-		str += tree.postOrderTravers(node.Right)
+		str += tree.PostOrderTravers(node.Left)
+		str += tree.PostOrderTravers(node.Right)
 		str += strconv.Itoa(node.Key)
+	}
+	return str
+}
+
+func (tree *Tree) LevelOrderTravers(root *Node) string {
+	var str string
+	if root == nil {
+		return str
+	}
+	queue := make([]*Node, 0)
+	queue = append(queue, root)
+	for len(queue) > 0 {
+		node := queue[0]
+		queue = queue[1:]
+		str += strconv.Itoa(node.Key) + " "
+		if node.Left != nil {
+			queue = append(queue, node.Left)
+		}
+		if node.Right != nil {
+			queue = append(queue, node.Right)
+		}
 	}
 	return str
 }
