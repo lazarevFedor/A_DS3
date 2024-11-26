@@ -312,6 +312,7 @@ func redBlackTreeApplication(travers string) {
 
 // binaryTreeApplication handles the binary tree creation process.
 func binaryTreeApplication() string {
+	var output string
 	tree := Binary.NewBinTree()
 	bracketBalance := 0
 	//Extracting string with tree from the file
@@ -335,7 +336,8 @@ func binaryTreeApplication() string {
 		return ""
 	}
 	fmt.Println("Binary Tree successfully created.")
-
+	Binary.Output(tree.Root, "", false, &output)
+	fmt.Print(output)
 	travers := tree.PreOrderTravers(tree.Root)
 	travers = removeExtraSpaces(travers)
 	fmt.Println("Binary Tree:", travers)
