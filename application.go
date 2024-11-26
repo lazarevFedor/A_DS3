@@ -9,8 +9,33 @@ import (
 	"os/exec"
 	"runtime"
 	"strconv"
+	"strings"
 	"unicode"
 )
+
+// clearInputBuffer reads and discards any unread input from the standard input buffer.
+func clearInputBuffer() {
+	// Создаем новый Reader для работы с буфером ввода
+	reader := bufio.NewReader(os.Stdin)
+	// Читаем и игнорируем все символы до конца строки
+	_, _ = reader.ReadString('\n')
+}
+
+// clearInputBuffer reads and discards any unread input from the standard input buffer.
+func waitForKeyPress() {
+	fmt.Println("Press any key to continue...")
+	clearInputBuffer()
+	var waitFor string
+	fmt.Scanln(&waitFor)
+}
+
+func removeExtraSpaces(input string) string {
+	// Разбиваем строку на части по пробелам
+	words := strings.Fields(input)
+	// Соединяем части обратно, вставляя ровно один пробел между ними
+	result := strings.Join(words, " ")
+	return result
+}
 
 // ClearScreen clears the console screen on Windows systems.
 func ClearScreen() {
@@ -138,6 +163,7 @@ func parseToTree(expression string) (*Binary.Node, error, int) {
 // redBlackTreeApplication - red-black tree application.
 func redBlackTreeApplication(travers string) {
 	var choise int
+	var output string
 	tree := RedBlack.NewRBTree()
 	for {
 		fmt.Println("Red-Black Tree Application Menu")
@@ -150,7 +176,9 @@ func redBlackTreeApplication(travers string) {
 		fmt.Println("7. Post-order traversal")
 		fmt.Println("8. Level-Order traversal")
 		fmt.Println("9. Clear screen")
-		fmt.Println("10. Back")
+		fmt.Println("10. Print tree")
+		fmt.Println("11. Clear tree")
+		fmt.Println("12. Back")
 		fmt.Print("Enter your choice: ")
 		_, err := fmt.Scan(&choise)
 		if err != nil {
@@ -159,12 +187,24 @@ func redBlackTreeApplication(travers string) {
 		}
 		switch choise {
 		case 1:
+			var digit string
+			var num int
 			for _, v := range travers {
 				if unicode.IsDigit(v) {
-					tree.Insert(int(v - '0'))
+					digit += string(v)
+				} else if digit != "" {
+					num, _ = strconv.Atoi(digit)
+					tree.Insert(num)
+					digit = ""
 				}
 			}
+			if digit != "" {
+				num, _ = strconv.Atoi(digit)
+				tree.Insert(num)
+				digit = ""
+			}
 			fmt.Println("Red-Black Tree successfully created.")
+			waitForKeyPress()
 		case 2:
 			var key int
 			fmt.Print("Enter key to insert: ")
@@ -175,6 +215,7 @@ func redBlackTreeApplication(travers string) {
 			}
 			tree.Insert(key)
 			fmt.Printf("Element %d inserted successfully.\n", key)
+			waitForKeyPress()
 		case 3:
 			var key int
 			fmt.Print("Enter key to delete: ")
@@ -183,8 +224,14 @@ func redBlackTreeApplication(travers string) {
 				fmt.Println("Invalid input. Please enter a number.")
 				continue
 			}
-			//tree.Delete(key)
-			fmt.Printf("Element %d deleted successfully.\n", key)
+			err = tree.Delete(key)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			} else {
+				fmt.Printf("Element %d deleted successfully.\n", key)
+			}
+			waitForKeyPress()
 		case 4:
 			var key int
 			fmt.Print("Enter key to search: ")
@@ -198,26 +245,42 @@ func redBlackTreeApplication(travers string) {
 			} else {
 				fmt.Printf("Element %d not found in the tree.\n", key)
 			}
+			waitForKeyPress()
 		case 5:
 			fmt.Println("In-order traversal:")
 			RedBlackTreeTravers := tree.InOrderTravers(tree.Root)
 			fmt.Println(RedBlackTreeTravers)
+			waitForKeyPress()
 		case 6:
 			fmt.Println("Pre-order traversal:")
 			RedBlackTreeTravers := tree.PreOrderTravers(tree.Root)
+			RedBlackTreeTravers = removeExtraSpaces(RedBlackTreeTravers)
 			fmt.Println(RedBlackTreeTravers)
+			waitForKeyPress()
 		case 7:
 			fmt.Println("Post-order traversal:")
 			RedBlackTreeTravers := tree.PostOrderTravers(tree.Root)
+			RedBlackTreeTravers = removeExtraSpaces(RedBlackTreeTravers)
 			fmt.Println(RedBlackTreeTravers)
+			waitForKeyPress()
 		case 8:
 			fmt.Println("Level-order traversal:")
 			RedBlackTreeTravers := tree.LevelOrderTravers(tree.Root)
+			RedBlackTreeTravers = removeExtraSpaces(RedBlackTreeTravers)
 			fmt.Println(RedBlackTreeTravers)
+			waitForKeyPress()
 		case 9:
 			ClearScreen()
 			continue
 		case 10:
+			ClearScreen()
+			RedBlack.Output(tree.Root, "", false, &output)
+			fmt.Print(output)
+			output = ""
+			waitForKeyPress()
+		case 11:
+			tree.Clear()
+		case 12:
 			return
 		}
 	}
@@ -250,6 +313,7 @@ func binaryTreeApplication() string {
 	fmt.Println("Binary Tree successfully created.")
 
 	travers := tree.PreOrderTravers(tree.Root)
+	travers = removeExtraSpaces(travers)
 	fmt.Println("Binary Tree:", travers)
 	return travers
 }

@@ -1,6 +1,7 @@
 package RedBlackTree
 
 import (
+	"fmt"
 	"strconv"
 )
 
@@ -86,6 +87,45 @@ func (tree *Tree) Search(key int) *Node {
 		}
 	}
 	return nil
+}
+
+func (node *Node) String() string {
+	if node.color {
+		return fmt.Sprintf("%v(B)", node.Key)
+	} else {
+		return fmt.Sprintf("%v(R)", node.Key)
+	}
+}
+
+func Output(node *Node, prefix string, isTail bool, str *string) {
+	if str == nil || node == nil {
+		return
+	}
+	if node.Right != nil {
+		newPrefix := prefix
+		if isTail {
+			newPrefix += "    "
+		} else {
+			newPrefix += "    "
+		}
+		Output(node.Right, newPrefix, false, str)
+	}
+	*str += prefix
+	if isTail {
+		*str += "└── "
+	} else {
+		*str += "┌── "
+	}
+	*str += node.String() + "\n"
+	if node.Left != nil {
+		newPrefix := prefix
+		if isTail {
+			newPrefix += "    "
+		} else {
+			newPrefix += "    "
+		}
+		Output(node.Left, newPrefix, true, str)
+	}
 }
 
 // PreOrderTravers function performs a pre-order traversal of the Red-Black Tree.
@@ -274,4 +314,126 @@ func (tree *Tree) replaceNode(old *Node, new *Node) {
 func (tree *Tree) Clear() {
 	tree.Root = nil
 	tree.size = 0
+}
+
+// maximumNode finds and returns the maximum node in the subtree rooted at the given node.
+func (node *Node) maximumNode() *Node {
+	if node == nil {
+		return nil
+	}
+	for node.Right != nil {
+		node = node.Right
+	}
+	return node
+}
+
+// Delete removes a node with the given key from the Red-Black Tree
+func (tree *Tree) Delete(key int) error {
+	var child *Node
+	node := tree.Search(key)
+	if node == nil {
+		return fmt.Errorf("Node doesnt exist: %v", key)
+	}
+	if node.Left != nil && node.Right != nil {
+		pred := node.Left.maximumNode()
+		node.Key = pred.Key
+		node = pred
+	}
+	if node.Left == nil || node.Right == nil {
+		if node.Right == nil {
+			child = node.Left
+		} else {
+			child = node.Right
+		}
+		if node.color == black {
+			node.color = nodeColor(child)
+			tree.deleteCase1(node)
+		}
+		tree.replaceNode(node, child)
+		if node.Parent == nil && child != nil {
+			child.color = black
+		}
+	}
+	tree.size--
+	return nil
+}
+
+func (tree *Tree) deleteCase1(node *Node) {
+	if node.Parent == nil {
+		return
+	}
+	tree.deleteCase2(node)
+}
+
+func (tree *Tree) deleteCase2(node *Node) {
+	sibling := node.sibling()
+	if nodeColor(sibling) == red {
+		node.Parent.color = red
+		sibling.color = black
+		if node == node.Parent.Left {
+			tree.rotateLeft(node.Parent)
+		} else {
+			tree.rotateRight(node.Parent)
+		}
+	}
+	tree.deleteCase3(node)
+}
+
+func (tree *Tree) deleteCase3(node *Node) {
+	sibling := node.sibling()
+	if nodeColor(node.Parent) == black &&
+		nodeColor(sibling) == black &&
+		nodeColor(sibling.Left) == black &&
+		nodeColor(sibling.Right) == black {
+		sibling.color = red
+		tree.deleteCase1(node.Parent)
+	} else {
+		tree.deleteCase4(node)
+	}
+}
+
+func (tree *Tree) deleteCase4(node *Node) {
+	sibling := node.sibling()
+	if nodeColor(node.Parent) == red &&
+		nodeColor(sibling) == black &&
+		nodeColor(sibling.Left) == black &&
+		nodeColor(sibling.Right) == black {
+		sibling.color = red
+		node.Parent.color = black
+	} else {
+		tree.deleteCase5(node)
+	}
+}
+
+func (tree *Tree) deleteCase5(node *Node) {
+	sibling := node.sibling()
+	if node == node.Parent.Left &&
+		nodeColor(sibling) == black &&
+		nodeColor(sibling.Left) == red &&
+		nodeColor(sibling.Right) == black {
+		sibling.color = red
+		sibling.Left.color = black
+		tree.rotateRight(sibling)
+	} else if node == node.Parent.Right &&
+		nodeColor(sibling) == black &&
+		nodeColor(sibling.Right) == red &&
+		nodeColor(sibling.Left) == black {
+		sibling.color = red
+		sibling.Right.color = black
+		tree.rotateLeft(sibling)
+	}
+	tree.deleteCase6(node)
+}
+
+func (tree *Tree) deleteCase6(node *Node) {
+	sibling := node.sibling()
+	sibling.color = nodeColor(node.Parent)
+	node.Parent.color = black
+	if node == node.Parent.Left && nodeColor(sibling.Right) == red {
+		sibling.Right.color = black
+		tree.rotateLeft(node.Parent)
+	} else if nodeColor(sibling.Left) == red {
+		sibling.Left.color = black
+		tree.rotateRight(node.Parent)
+	}
 }
