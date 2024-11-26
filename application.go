@@ -167,7 +167,7 @@ func redBlackTreeApplication(travers string) {
 	tree := RedBlack.NewRBTree()
 	for {
 		fmt.Println("Red-Black Tree Application Menu")
-		fmt.Println("1. Create tree from binary tree")
+		fmt.Println("1. Create tree")
 		fmt.Println("2. Insert element")
 		fmt.Println("3. Delete element")
 		fmt.Println("4. Search element")
@@ -187,9 +187,33 @@ func redBlackTreeApplication(travers string) {
 		}
 		switch choise {
 		case 1:
+			var numbers string
+			fmt.Print("\n1 - make from Binary Tree\n2 - make from console output\nEnter your choice: ")
+			_, err = fmt.Scan(&choise)
+			clearInputBuffer()
+			if err != nil {
+				fmt.Println("Invalid input. Please enter a number.")
+				continue
+			}
+			if choise == 1 {
+				numbers = travers
+			} else if choise == 2 {
+				reader := bufio.NewReader(os.Stdin)
+				fmt.Print("Enter binary tree (space separated values): ")
+				input, err := reader.ReadString('\n')
+				if err != nil {
+					fmt.Println("Invalid input. Please enter a valid binary tree.")
+					continue
+				}
+				numbers = removeExtraSpaces(input)
+			} else {
+				fmt.Println("Invalid choice. Please try again.")
+				continue
+			}
 			var digit string
 			var num int
-			for _, v := range travers {
+			tree.Clear()
+			for _, v := range numbers {
 				if unicode.IsDigit(v) {
 					digit += string(v)
 				} else if digit != "" {
